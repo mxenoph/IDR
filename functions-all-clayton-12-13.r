@@ -20,7 +20,7 @@
 
 ################ read peak caller results
 
-# process narrow peak format
+# process narrow peak format# {{{
 # some peak callers may not report q-values, p-values or fold of enrichment
 # need further process before comparison
 #
@@ -78,9 +78,9 @@ process.narrowpeak <- function(narrow.file, chr.size, half.width=NULL, summit="o
 
   bb <- clean.data(bb)
   invisible(list(data.ori=bb.ori, data.cleaned=bb))
-}
+}# }}}
 
-# clean data 
+# clean data # {{{
 # and concatenate chromosomes if needed
 clean.data <- function(adata){
 
@@ -96,9 +96,9 @@ clean.data <- function(adata){
   }  
  
   return(adata) 
-}
+}# }}}
 
-# concatenate peaks
+# concatenate peaks# {{{
 # peaks: the dataframe to have all the peaks
 # chr.file: the file to keep the length of each chromosome 
 # chr files should come from the species that the data is from
@@ -120,12 +120,12 @@ clean.data <- function(adata){
 #  }
 #
 #  invisible(peaks)
-#}
+#}# }}}
 
 
 
 
-# concatenate peaks
+# concatenate peaks# {{{
 # peaks: the dataframe to have all the peaks
 # chr.file: the file to keep the length of each chromosome 
 # chr files should come from the species that the data is from
@@ -151,9 +151,9 @@ concatenate.chr <- function(peaks, chr.size){
 
   invisible(peaks)
 }
+# }}}
 
-
-deconcatenate.chr <- function(peaks, chr.size){
+deconcatenate.chr <- function(peaks, chr.size){# {{{
 
   chr.o <- order(chr.size[,1])
   chr.size <- chr.size[chr.o,]
@@ -183,8 +183,9 @@ deconcatenate.chr <- function(peaks, chr.size){
   
   invisible(peaks)
 }
+# }}}
 
-################ preprocessing peak calling output
+################ preprocessing peak calling output# {{{
 
 
 # 
@@ -297,9 +298,9 @@ find.overlap <- function(rep1, rep2){
 
   invisible(list(id1=id1, id2=id2))
   
-}
+}# }}}
 
-# Impute the missing significant value for the peaks called only on one replicate.
+# Impute the missing significant value for the peaks called only on one replicate.# {{{
 # value 
 # INPUT:
 #   rep1, rep2: the two peak calling output 
@@ -369,9 +370,9 @@ fill.missing.peaks <- function(rep1, rep2, id1, id2, p.value.impute){
    
    invisible(list(rep1=rep1.ordered, rep2=rep2.ordered,
                   id1=id1.filled[o1], id2=id2.filled[o2]))
- }
+ }# }}}
 
-# Merge peaks with same ID on the same replicates 
+# Merge peaks with same ID on the same replicates # {{{
 # (They are generated if two peaks on rep1 map to the same peak on rep2)
 # need peak.list have 3 columns: start, stop and sig.value 
 merge.peaks.best <- function(peak.list, id){
@@ -438,9 +439,9 @@ merge.peaks.best <- function(peak.list, id){
 
   data.new <- data.frame(id=id.new, sig.value=sig.value, start=start.new, stop=stop.new, signal.value=signal.value, p.value=p.value, q.value=q.value, chr=chr, start.ori=start.ori, stop.ori=stop.ori)
   invisible(data.new)
-}
+}# }}}
 
-# Merge peaks with same ID on the same replicates 
+# Merge peaks with same ID on the same replicates # {{{
 # (They are generated if two peaks on rep1 map to the same peak on rep2)
 # need peak.list have 3 columns: start, stop and sig.value 
 merge.peaks <- function(peak.list, id){
@@ -504,13 +505,13 @@ merge.peaks <- function(peak.list, id){
 
   data.new <- data.frame(id=id.new, sig.value=sig.value, start=start.new, stop=stop.new, signal.value=signal.value, p.value=p.value, q.value=q.value, chr=chr, start.ori=start.ori, stop.ori=stop.ori)
   invisible(data.new)
-}
+}# }}}
 
 
 
 
 
-# a wrap function to fill in missing peaks, merge peaks and impute significant values
+# a wrap function to fill in missing peaks, merge peaks and impute significant values# {{{
 # out1 and out2 are two peak calling outputs
 pair.peaks <- function(out1, out2, p.value.impute=0){
 
@@ -567,11 +568,11 @@ overlap.middle  <- function(x){
   f.overlap.ratio <- f.overlap/min(f1, f2)
 
   return(f.overlap.ratio)
-}
+}# }}}
 
 
 
-#######
+######## {{{
 ####### compute correspondence profile
 #######
 
@@ -584,9 +585,9 @@ comp.uri <- function(tv, x){
 #  sum(x[1:ceiling(n*tv[2])] >= qt)/n/tv[2]- tv[1]*tv[2] #tv[2] is v
   sum(x[1:ceiling(n*tv[2])] >= qt)/n
 
-}
+}# }}}
 
-# compute the correspondence profile
+# compute the correspondence profile# {{{
 # tt, vv: vector between (0, 1) for percentages
 get.uri.2d <- function(x1, x2, tt, vv, spline.df=NULL){
 
@@ -639,10 +640,10 @@ get.uri.2d <- function(x1, x2, tt, vv, spline.df=NULL){
                  uri.slope=uri.slope, t.binned=tt.binned[2:length(uri.binned)], 
                  uri.spl=uri.spl, uri.der=uri.der, jump.left=jump.left,
                  ntotal=ntotal))
- }
+ }# }}}
 
 
-# change the scale of uri from based on t (percentage) to n (number of peaks or basepairs)
+# change the scale of uri from based on t (percentage) to n (number of peaks or basepairs)# {{{
 # this is for plotting multiple pairwise URI's on the same plot 
 scale.t2n <- function(uri){
 
@@ -662,12 +663,12 @@ scale.t2n <- function(uri){
 
   uri.n <- list(tv=tv, uri=uri.uri, t.binned=t.binned, uri.slope=uri.slope, uri.spl=uri.spl, uri.der=uri.der, ntotal=ntotal, jump.left=jump.left)
   return(uri.n)
-} 
+} # }}}
 
 
 
 
-# a wrapper for running URI for peaks from peak calling results
+# a wrapper for running URI for peaks from peak calling results# {{{
 # both data1 and data2 are calling results in narrowpeak format
 compute.pair.uri <- function(data.1, data.2, sig.value1="signal.value", sig.value2="signal.value", spline.df=NULL, overlap.ratio=0){
 
@@ -707,11 +708,11 @@ compute.pair.uri <- function(data.1, data.2, sig.value1="signal.value", sig.valu
   return(list(uri=uri, uri.n=uri.n, data12.enrich=data12.enrich, sig.value1=sig.value1, sig.value2=sig.value2))
 
 
-}
+}# }}}
 
 
 
-# compute uri for matched sample
+# compute uri for matched sample# {{{
 get.uri.matched <- function(data12, df=10){
 
   tt <- seq(0.01, 1, by=0.01)
@@ -723,9 +724,9 @@ get.uri.matched <- function(data12, df=10){
 
   return(list(uri=uri, uri.n=uri.n))
   
-}
+}# }}}
 
-# map.uv is a pair of significant values corresponding to specified consistency FDR
+# map.uv is a pair of significant values corresponding to specified consistency FDR# {{{
 # assuming values in map.uv and qvalue are linearly related
 # data.set is the original data set
 # sig.value is the name of the significant value in map.uv, say enrichment
@@ -744,10 +745,10 @@ map.sig.value <- function(data.set, map.uv, nominal.value){
   }
 
   invisible(map.nominal)
-}
+}# }}}
 
 
-############### plot correspondence profile
+############### plot correspondence profile# {{{
 
 # plot multiple comparison wrt one template
 # uri.list contains the total number of peaks
@@ -761,6 +762,7 @@ plot.uri.group <- function(uri.n.list, plot.dir, file.name=NULL, legend.txt, xla
 
   ntotal <- c()
   for(i in 1:n)
+      # Total peaks common for each comparison
     ntotal[i] <- uri.n.list[[i]]$ntotal
 
   jump.left <- c()
@@ -798,7 +800,31 @@ plot.uri.group <- function(uri.n.list, plot.dir, file.name=NULL, legend.txt, xla
     par(mfrow=c(1,1), mar=c(5,5,4,2))
   }
 
-  plot(uri.n.list[[1]]$tv[,1], uri.n.list[[1]]$uri, type="n", xlab=xlab.txt, ylab=ylab.txt, xlim=c(0, max.peak), ylim=c(0, max.peak), cex.lab=2)
+  # Gather all information on a dataframe to be able to use ggplot2 from batch-consistency-plot.r# {{{
+  data_points = NULL
+  data_lines = NULL
+  data_slopes = NULL
+
+  for(i in 1:n){
+    if(plot.missing){
+        current_points = data.frame(tv=uri.n.list[[i]]$tv[,1], uri=uri.n.list[[i]]$uri, comparison=legend.txt[i])
+        data_points = rbind(data_points, current_points)
+    } else {
+        current_points = data.frame(tv=uri.n.list[[i]]$tv[1:jump.left[i],1], uri=uri.n.list[[i]]$uri[1:jump.left[i]], comparison=legend.txt[i])
+        data_points = rbind(data_points, current_points)
+    }
+  current_line= data.frame(x=uri.n.list[[i]]$uri.spl$x, y=uri.n.list[[i]]$uri.spl$y, comparison=legend.txt[i])
+  data_lines = rbind(data_lines, current_line)
+
+  current_slope = data.frame(x=uri.n.list[[i]]$uri.der$x, y=uri.n.list[[i]]$uri.der$y, comparison=legend.txt[i])
+  data_slopes = rbind(data_slopes, current_slope)
+
+  }
+  data_points$index=rownames(data_points)# }}}
+
+  plot(uri.n.list[[1]]$tv[,1], uri.n.list[[1]]$uri,
+       type="n", xlab=xlab.txt, ylab=ylab.txt,
+       xlim=c(0, max.peak), ylim=c(0, max.peak), cex.lab=2)
 
   for(i in 1:n){
 
@@ -841,8 +867,8 @@ plot.uri.group <- function(uri.n.list, plot.dir, file.name=NULL, legend.txt, xla
   if(!is.null(file.name)){
     dev.off()
   }
-  
-}
+  return(list('data_points'=data_points, 'data_lines'=data_lines, 'data_slopes'=data_slopes))
+}# }}}
 
 
 
@@ -1750,7 +1776,7 @@ comp.uri.ez <- function(tt, u, v, e.z){
    return(ez)
 }
 
-## obsolete function (01-06-2010)
+## obsolete function (01-06-2010)# {{{
 # compute the largest posterior error probability corresponding to
 # the square centered at the origin and spanned top tt% on both coordinates
 # so the consistent low rank ones are excluded
@@ -1770,9 +1796,9 @@ comp.ez.cutoff <- function(tt, u, v, e.z, boundary.txt){
 
    return(ez.bound)
 
-}
+}# }}}
 
-# obsolete functions: 01-06-2010
+# obsolete functions: 01-06-2010# {{{
 # compute the error rate
 # u.t and v.t are the quantiles
 # this one is used for the plots generated initially in the brief writeup  
@@ -1822,9 +1848,9 @@ get.ez.tt.old  <- function(em.fit, reverse=T, fdr.level=c(0.01, 0.05, 0.1)){
   map.uv <- cbind(error.prob.cutoff, sig.value1, sig.value2, n.selected.match)
 
   return(list(n=tt*length(u), uri.ez=uri.ez, u.t=u.t, v.t=v.t, tt=tt, fdr.level=fdr.level,  map.uv=map.uv, e.z=e.z, error.prob.cutoff=error.prob.cutoff))
-}
+}# }}}
 
-# created: 01-06-2010
+# created: 01-06-2010# {{{
 # Output IDR at various number of selected peaks
 # Find cutoff (idr cutoff, sig.value cutoff on each replicate) for specified IDR level
 # IDR definition is similar to FDR
@@ -1867,7 +1893,7 @@ get.ez.tt <- function(em.fit, idr.level=c(0.01, 0.05, 0.1)){
   map.uv <- cbind(ez.cutoff, n.selected)
 
   return(list(n=n.select, IDR=IDR, idr.level=idr.level, map.uv=map.uv))
-}   
+}   # }}}
   
 #  return(list(n=tt*length(u), uri.ez=uri.ez,  fdr.level=fdr.level,  map.uv=map.uv, e.z=e.z, error.prob.cutoff=error.prob.cutoff))  
   
@@ -1876,7 +1902,7 @@ get.ez.tt <- function(em.fit, idr.level=c(0.01, 0.05, 0.1)){
 
 
 ### compute the mean of the marginals
-get.mar.mean <- function(em.out){
+get.mar.mean <- function(em.out){# {{{
 
   x.f1 <- em.out$x.mar$f1
   x.f2 <- em.out$x.mar$f2
@@ -1895,10 +1921,10 @@ get.mar.mean <- function(em.out){
               y.sd1=y.stat1$sd, y.sd2=y.stat2$sd
               ))
 
-}
+}# }}}
 
 
-# compute the mean of marginals
+# compute the mean of marginals# {{{
 get.hist.mean  <- function(x.f){
 
   nbreaks <- length(x.f$breaks)
@@ -1909,9 +1935,9 @@ get.hist.mean  <- function(x.f){
   x.sd <- sqrt(sum(x.mid*x.mid*x.f$density*x.bin)-x.mean^2)
   
   return(list(mean=x.mean, sd=x.sd))
-}
+}# }}}
 
-get.hist.var <- function(x.f){
+get.hist.var <- function(x.f){# {{{
 
   nbreaks <- length(x.f$breaks)
   x.bin <- x.f$breaks[-1]-x.f$breaks[-nbreaks]
@@ -1920,11 +1946,11 @@ get.hist.var <- function(x.f){
   x.mean <- sum(x.mid*x.f$density*x.bin)
 
   return(mean=x.mean)  
-}
+}# }}}
 
 # obsolete function (01-06-2010)
 # plot 
-plot.ez.group.old <- function(ez.list, plot.dir, file.name=NULL, legend.txt, y.lim=NULL, xlab.txt="num of significant peaks",  ylab.txt="avg posterior prob of being random", col.txt=NULL, title.txt=NULL){
+plot.ez.group.old <- function(ez.list, plot.dir, file.name=NULL, legend.txt, y.lim=NULL, xlab.txt="num of significant peaks",  ylab.txt="avg posterior prob of being random", col.txt=NULL, title.txt=NULL){# {{{
 
   if(is.null(col.txt))
     col.txt <- c("black", "red", "purple", "green", "blue", "cyan", "magenta", "orange", "grey")
@@ -1965,10 +1991,10 @@ plot.ez.group.old <- function(ez.list, plot.dir, file.name=NULL, legend.txt, y.l
     dev.off()
   }
   
-}
+}# }}}
 
 
-plot.ez.group <- function(ez.list, plot.dir, file.name=NULL, legend.txt, y.lim=NULL, xlab.txt="num of significant peaks",  ylab.txt="IDR", col.txt=NULL, title.txt=NULL){
+plot.ez.group <- function(ez.list, plot.dir, file.name=NULL, legend.txt, y.lim=NULL, xlab.txt="num of significant peaks",  ylab.txt="IDR", col.txt=NULL, title.txt=NULL){# {{{
 
   if(is.null(col.txt))
     col.txt <- c("black", "red", "purple", "green", "blue", "cyan", "magenta", "orange", "grey")
@@ -1998,11 +2024,15 @@ plot.ez.group <- function(ez.list, plot.dir, file.name=NULL, legend.txt, y.lim=N
 
   q <- seq(0.01, 0.99, by=0.01)
   
+  data_points=NULL
   for(i in 1:length(ez.list)){
 
     n.plot <- round(quantile(ez.list[[i]]$n, prob=q))
     IDR.plot <- ez.list[[i]]$IDR[n.plot]
-    lines(n.plot, IDR.plot, col=col.txt[i], cex=2, lwd=5)    
+    lines(n.plot, IDR.plot, col=col.txt[i], cex=2, lwd=5)
+
+    current_points = data.frame('n.plot'=n.plot, 'IDR.plot'= IDR.plot, comparison = legend.txt[i])
+    data_points = rbind(data_points, current_points)
   }
 
 
@@ -2014,8 +2044,9 @@ plot.ez.group <- function(ez.list, plot.dir, file.name=NULL, legend.txt, y.lim=N
   if(!is.null(file.name)){
     dev.off()
   }
+  return(data_points)
   
-}
+}# }}}
 
 
 
