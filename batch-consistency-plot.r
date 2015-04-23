@@ -73,6 +73,7 @@ dev.off()
 pdf(paste(output.file.prefix, "-ggplot.pdf", sep=""), paper='a4')
 plot_diagnostics = function(points, lines, slopes, title=NULL){# {{{
     library(ggplot2)
+    source("~/source/Rscripts/ggplot-functions.R")
     # Setting colour=NA outside the aes removes the black border from points
     p = ggplot(data=points, aes(x=tv, y=uri, fill=comparison)) + geom_point(pch=21, size=2.5, colour=NA)
     # x axis is all significant peaks and y is the common in each comparison so max(x) is the limit for both axes
@@ -104,7 +105,7 @@ grobs[[4]] = x[['y']]
 
 
 summarised_data = plot.ez.group(ez.list, plot.dir=NULL, file.name=NULL, legend.txt=legend.txt, y.lim=c(0, 0.6))
-grobs[[5]] = ggplot(summarised_data, aes(x=n.plot, y=IDR.plot, fill=comparison)) + geom_point(pch=21, colour=NA) + geom_line() + theme_bw() + theme(legend.position="none")
+grobs[[5]] = ggplot(summarised_data, aes(x=n.plot, y=IDR.plot, fill=comparison)) + geom_point(pch=21, colour=NA) + geom_line() + theme_bw() + theme(legend.position="none") + xlab('# significant peaks') + ylab('IDR')
 grobs[[6]] = x[['leg']]
 
 library(gridExtra)
