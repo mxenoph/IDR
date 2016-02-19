@@ -71,6 +71,7 @@ dev.off()
 # plots also the r standard plots, should really write a function to gather the data
 # rather than hacking the idr functions
 pdf(paste(output.file.prefix, "-ggplot.pdf", sep=""), paper='a4')
+
 plot_diagnostics = function(points, lines, slopes, title=NULL){# {{{
     library(ggplot2)
     source("~/source/Rscripts/ggplot-functions.R")
@@ -103,12 +104,10 @@ x = plot_diagnostics(summarised_data$data_points, summarised_data$data_lines, su
 grobs[[3]] = x[['p']]
 grobs[[4]] = x[['y']]
 
-
 summarised_data = plot.ez.group(ez.list, plot.dir=NULL, file.name=NULL, legend.txt=legend.txt, y.lim=c(0, 0.6))
 grobs[[5]] = ggplot(summarised_data, aes(x=n.plot, y=IDR.plot, fill=comparison)) + geom_point(pch=21, colour=NA) + geom_line() + theme_bw() + theme(legend.position="none") + xlab('# significant peaks') + ylab('IDR')
 grobs[[6]] = x[['leg']]
 
 library(gridExtra)
-do.call('grid.arrange', c(grobs, ncol=2, main=output.file.prefix))
-
+do.call('grid.arrange', c(grobs, ncol=2, top=output.file.prefix))
 dev.off()
