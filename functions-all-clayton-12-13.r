@@ -867,7 +867,7 @@ plot.uri.group <- function(uri.n.list, plot.dir, file.name=NULL, legend.txt, xla
   if(!is.null(file.name)){
     dev.off()
   }
-  return(list('data_points'=data_points, 'data_lines'=data_lines, 'data_slopes'=data_slopes))
+  return(list(data_points=data_points, data_lines=data_lines, data_slopes=data_slopes))
 }# }}}
 
 
