@@ -70,24 +70,29 @@ dev.off()
 
 # plots also the r standard plots, should really write a function to gather the data
 # rather than hacking the idr functions
+gg_param = modules::import('ggplots')
 pdf(paste(output.file.prefix, "-ggplot.pdf", sep=""), paper='a4')
 
 plot_diagnostics = function(points, lines, slopes, title=NULL){# {{{
     library(ggplot2)
     source("~/source/Rscripts/ggplot-functions.R")
     # Setting colour=NA outside the aes removes the black border from points
-    p = ggplot(data=points, aes(x=tv, y=uri, fill=comparison)) + geom_point(pch=21, size=2.5, colour=NA)
+    p = ggplot(data=points, aes(x=tv, y=uri, fill=comparison))
     # x axis is all significant peaks and y is the common in each comparison so max(x) is the limit for both axes
-    p = p + geom_abline(intercept=0, slope=1, linetype="dotted")
-    p = p + xlab('# significant peaks') + ylab('# peaks in common') + theme_bw() + theme(legend.key=element_blank())
     p = p + geom_line(data=lines, aes(x=x, y=y, colour=comparison), size=2.5) + ylim(0, max(points[,1:2]))
+    p = p + ggtitle(title) + gg_param$theme_publication
     legend = g_legend(p)
-    p = p + ggtitle(title) + theme(legend.position="none")
+    # adding points after the legend is saved so that there is no point printed in
+    # legend
+    p = p + geom_point(pch=21, size=2.5, colour=NA)
+    p = p + geom_abline(intercept=0, slope=1, linetype="dotted")
+    p = p + xlab('# significant peaks') + ylab('# peaks in common') + theme(legend.key=element_blank())
+    p = p + theme(legend.position="none")
 
     y = ggplot(data=slopes, aes(x=x, y=y, colour=comparison)) + geom_line(size=2.5)
     y = y + geom_abline(intercept=1, slope=0, linetype="dotted")
     y = y + xlab('# significant peaks') + ylab('slope')
-    y = y + theme_bw() + theme(legend.position="none") + ylim(0, 1.5) + ggtitle(title)
+    y = y + gg_param$theme_publication + theme(legend.position="none") + ylim(0, 1.5) + ggtitle(title)
 
     return(list('p' = p, 'y' = y, 'leg'=legend))
 }
@@ -105,9 +110,11 @@ grobs[[3]] = x[['p']]
 grobs[[4]] = x[['y']]
 
 summarised_data = plot.ez.group(ez.list, plot.dir=NULL, file.name=NULL, legend.txt=legend.txt, y.lim=c(0, 0.6))
-grobs[[5]] = ggplot(summarised_data, aes(x=n.plot, y=IDR.plot, fill=comparison)) + geom_point(pch=21, colour=NA) + geom_line() + theme_bw() + theme(legend.position="none") + xlab('# significant peaks') + ylab('IDR')
+grobs[[5]] = ggplot(summarised_data, aes(x=n.plot, y=IDR.plot, fill=comparison)) + geom_point(pch=21, colour=NA) + geom_line() + xlab('# significant peaks') + ylab('IDR') + gg_param$theme_publication + theme(legend.position="none")
 grobs[[6]] = x[['leg']]
 
-library(gridExtra)
-do.call('grid.arrange', c(grobs, ncol=2, top=output.file.prefix))
+library(cowplot)
+plot_grid(grobs[[1]], grobs[[2]],  grobs[[3]],
+          grobs[[4]], grobs[[5]],  grobs[[6]],
+          labels = toupper(letters[1:6]), ncol = 2, align = 'v')
 dev.off()
