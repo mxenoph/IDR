@@ -110,7 +110,7 @@ grobs[[3]] = x[['p']]
 grobs[[4]] = x[['y']]
 
 summarised_data = plot.ez.group(ez.list, plot.dir=NULL, file.name=NULL, legend.txt=legend.txt, y.lim=c(0, 0.6))
-grobs[[5]] = ggplot(summarised_data, aes(x=n.plot, y=IDR.plot, fill=comparison)) + geom_point(pch=21, colour=NA) + geom_line() + xlab('# significant peaks') + ylab('IDR') + gg_param$theme_publication + theme(legend.position="none")
+grobs[[5]] = ggplot(summarised_data, aes(x=n.plot, y=IDR.plot, colour=comparison)) + geom_point(pch=21, colour=NA) + geom_line() + xlab('# significant peaks') + ylab('IDR') + gg_param$theme_publication + theme(legend.position="none")
 grobs[[6]] = x[['leg']]
 
 library(cowplot)
